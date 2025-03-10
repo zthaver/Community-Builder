@@ -13,10 +13,24 @@ export async function login(formData: FormData) {
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
-    
+    role: formData.get("role") as string,
+
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  const { data:userData,error } = await supabase.auth.signInWithPassword(data)
+  if(data.role == "moderator")
+  {
+    redirect("/moderator");
+  }
+  if(data.role == "familymember")
+  {
+      redirect("/moderator");
+  }
+  if(data.role == "familymember")
+    {
+        redirect("/moderator");
+    }
+
 
   if (error) {
       NextResponse.redirect('/error')
@@ -34,11 +48,13 @@ export async function signup(formData: FormData) {
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
+    role: formData.get("role") as string,
   }
 
   const { error, data:userData } = await supabase.auth.signUp(data)
 
   console.log({ userData,error})
+  console.log(data.role);
 
   if (error) {
     console.log("error");

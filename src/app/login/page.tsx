@@ -14,9 +14,10 @@ export default function LoginPage() {
       <label htmlFor="password">Password:</label>
       <input id="password" name="password" type="password" required />
       <h1> Select Role</h1>
-      <select value={userRole}
+      <select
+      name="role" 
+      value={userRole}
       onChange={e=>{
-        console.log(e.target.value);
         if(e.target.value!="")
         {
           setUserRole(e.target.value!)
@@ -24,7 +25,7 @@ export default function LoginPage() {
       }}>
         <option value="senior">Senior</option>
         <option value="moderator">Moderator</option>
-        <option value="familyMember">Family Member</option>
+        <option value="familymember">Family Member</option>
       </select>
       <button formAction={login}>Log in</button>
       <button formAction={signup}>Sign up</button>
