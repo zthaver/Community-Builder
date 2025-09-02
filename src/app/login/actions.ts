@@ -1,39 +1,46 @@
 'use server'
 import { revalidatePath } from 'next/cache'
-import { NextResponse } from "next/server";
 import { redirect } from 'next/navigation'
 
 import { createClient } from '../../../utils/supabase/server'
 
+let id = 0;
+
 export async function login(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createClient("authenticated")
 
   // type-casting here for convenience
   // in practice, you should validate your inputs
+  // note to self: use yup/formik for form validation
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
     role: formData.get("role") as string,
-
   }
 
-  const { data:userData,error } = await supabase.auth.signInWithPassword(data)
-  if(data.role == "moderator")
-  {
+
+  //const baseURL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+
+  const { data: userData, error } = await supabase.auth.signInWithPassword(data)
+
+  console.log(userData);
+  console.log(error);
+
+
+  if (data.role == "moderator") {
     redirect("/moderator");
   }
-  if(data.role == "familymember")
-  {
-      redirect("/moderator");
+  if (data.role == "familymember") {
+    redirect("/moderator");
   }
-  if(data.role == "familymember")
-    {
-        redirect("/moderator");
-    }
+  if (data.role == "familymember") {
+    redirect("/moderator");
+  }
 
 
   if (error) {
-      NextResponse.redirect('/error')
+    redirect("/error");
   }
 
   revalidatePath('/home', 'layout')
@@ -41,25 +48,51 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient()
+  
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
+  const signUpData = {
     email: formData.get('email') as string,
+    name: formData.get('name') as string,
     password: formData.get('password') as string,
     role: formData.get("role") as string,
   }
+  
+  const supabase = await createClient("");
+  const { error: errorSignup, data: userData } = await supabase.auth.signUp(signUpData);
+  
 
-  const { error, data:userData } = await supabase.auth.signUp(data)
 
-  console.log({ userData,error})
-  console.log(data.role);
-
-  if (error) {
-    console.log("error");
+  if (errorSignup) {
+    console.log("error" + errorSignup.message);
     redirect('/error')
   }
+
+  else  {
+    //const supabase = await createClient("");
+    const { data: { session }, error } = await supabase.auth.getSession();
+    console.log("session:", session);
+    const { data: insertedData, error: errorInsert } = await supabase
+      .from('users')
+      .insert({
+        id: userData?.user?.id, // UUID from auth
+        name: signUpData.name,
+        email:signUpData.email,
+      });
+
+
+
+  console.log(insertedData);
+
+  }
+
+
+
+
+
+
+  //console.log(signUpData.role);
+
+
 
   revalidatePath('/', 'layout')
   redirect('/')

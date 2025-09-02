@@ -24,7 +24,7 @@ export default function DemoClientComponent(){
             }
             getUser();
         },[]);
-
+        console.log("hagoo");
         console.log({user});
 
         return <h2> Client Component </h2>
