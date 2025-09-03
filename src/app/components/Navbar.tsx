@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { BookIcon ,ContactIcon, HouseIcon } from 'lucide-react';
+import Link from 'next/link';
 
 const Navbar = () => {
   return (
@@ -22,7 +23,11 @@ const Navbar = () => {
           </div>
         </div>
         <div>
-          <Button variant="ghost">Login</Button>
+          <Button asChild variant="ghost">
+            <Link href="/login">
+              LOGIN
+            </Link>
+          </Button>
         </div>
       </div>
     </nav>
