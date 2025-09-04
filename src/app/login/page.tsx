@@ -7,39 +7,67 @@ import { Button } from "../../components/ui/button";
 import Navbar from '../components/Navbar';
 
 export default function LoginPage() {
-  const [userRole,setUserRole] = useState("");
-  
+  const [userRole, setUserRole] = useState("");
+
   return (
-   <div>
-    <Navbar/>
-    <div className='flex items-center justify-center min-h-screens pt-10 '>
-      <form className='border-2 rounded shadow'>
-        <label htmlFor="name">Name:</label>
-        <input id="name" name="name" type="name" required />
-        <label htmlFor="email">Email:</label>
-        <input id="email" name="email" type="email" required />
-        <label htmlFor="password">Password:</label>
-        <input id="password" name="password" type="password" required />
-        <h1> Select Role</h1>
-        <select
-        name="role" 
-        value={userRole}
-         onChange={e=>{
-            if(e.target.value!="")
-            {
-              setUserRole(e.target.value!)
-            }}}>
-        <option value="senior">Senior</option>
-        <option value="moderator">Moderator</option>
-        <option value="familymember">Family Member</option>
-      </select>
-      <Button size="lg"> Test </Button>
-      <button formAction={login}>Log in</button>
-      <button formAction={signup}>Sign up</button>
-    </form>
+
+
+
+  <div>
+  <Navbar />
+
+  <div className="min-h-screen flex items-start justify-center pt-10 gap-16">
+    {/* Login Form */}
+    <div className="flex flex-col items-start">
+      <h1 className="text-[60px] mb-4">Login</h1>
+      <form className="flex flex-col gap-4">
+        <label htmlFor="login-email">Email:</label>
+        <input id="login-email" name="email" type="email" required className="p-2 border rounded" />
+
+        <label htmlFor="login-password">Password:</label>
+        <input id="login-password" name="password" type="password" required className="p-2 border rounded" />
+
+        <Button formAction={login} className="bg-blue-500 text-white py-2 rounded mt-2">
+          Login
+        </Button>
+      </form>
     </div>
-      </div>
-    
+
+    {/* Sign Up Form */}
+    <div className="flex flex-col items-start">
+      <h1 className="text-[60px] mb-4">Sign Up</h1>
+      <form className="flex flex-col gap-4">
+        <label htmlFor="signup-name">Name:</label>
+        <input id="signup-name" name="name" type="text" required className="p-2 border rounded" />
+
+        <label htmlFor="signup-email">Email:</label>
+        <input id="signup-email" name="email" type="email" required className="p-2 border rounded" />
+
+        <label htmlFor="signup-password">Password:</label>
+        <input id="signup-password" name="password" type="password" required className="p-2 border rounded" />
+
+        <label htmlFor="signup-role">Select Role:</label>
+        <select
+          id="signup-role"
+          name="role"
+          value={userRole}
+          onChange={e => setUserRole(e.target.value!)}
+          className="p-2 border rounded"
+        >
+          <option value="senior">Senior</option>
+          <option value="moderator">Moderator</option>
+          <option value="familymember">Family Member</option>
+        </select>
+
+        <Button variant="ghost" formAction={signup} className="bg-green-500 text-white py-2 rounded mt-2">
+          Sign Up
+        </Button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 
   )
 }

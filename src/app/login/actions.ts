@@ -26,10 +26,12 @@ export async function login(formData: FormData) {
 
   console.log(userData);
   console.log(error);
+  console.log(data.role);
 
 
   if (data.role == "moderator") {
-    redirect("/moderator");
+    console.log(userData.user?.id)
+    redirect("/moderator" + userData.user?.id);
   }
   if (data.role == "familymember") {
     redirect("/moderator");
@@ -70,19 +72,16 @@ export async function signup(formData: FormData) {
   else  {
     //const supabase = await createClient("");
     const { data: { session }, error } = await supabase.auth.getSession();
-    console.log("session:", session);
     const { data: insertedData, error: errorInsert } = await supabase
       .from('users')
       .insert({
         id: userData?.user?.id, // UUID from auth
         name: signUpData.name,
         email:signUpData.email,
+        role:signUpData.role,
       });
-
-
-
-  console.log(insertedData);
-
+      
+ redirect('/home ')
   }
 
 

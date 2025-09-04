@@ -1,8 +1,12 @@
 import React from 'react'
+import ArticleCard from '../components/ArticleCard'
 
 const page = () => {
   return (
-    <div>page</div>
+    <div>
+      <ArticleCard></ArticleCard>
+    </div>
+
   )
 }
 
