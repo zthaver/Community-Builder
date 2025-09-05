@@ -8,6 +8,8 @@ import Navbar from '../components/Navbar';
 
 export default function LoginPage() {
   const [userRole, setUserRole] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   return (
 
@@ -38,13 +40,13 @@ export default function LoginPage() {
       <h1 className="text-[60px] mb-4">Sign Up</h1>
       <form className="flex flex-col gap-4">
         <label htmlFor="signup-name">Name:</label>
-        <input id="signup-name" name="name" type="text" required className="p-2 border rounded" />
+        <input onChange={e => setUserName(e.target.value)} id="signup-name" name="name" type="text" required className="p-2 border rounded" />
 
         <label htmlFor="signup-email">Email:</label>
-        <input id="signup-email" name="email" type="email" required className="p-2 border rounded" />
+        <input onChange={e => setUserEmail(e.target.value)} id="signup-email" name="email" type="email" required className="p-2 border rounded" />
 
         <label htmlFor="signup-password">Password:</label>
-        <input id="signup-password" name="password" type="password" required className="p-2 border rounded" />
+        <input  id="signup-password" name="password" type="password" required className="p-2 border rounded" />
 
         <label htmlFor="signup-role">Select Role:</label>
         <select

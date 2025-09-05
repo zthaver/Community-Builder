@@ -9,39 +9,53 @@ let id = 0;
 export async function login(formData: FormData) {
   const supabase = await createClient("authenticated")
 
+  let roleData = "senior";
   // type-casting here for convenience
   // in practice, you should validate your inputs
   // note to self: use yup/formik for form validation
-  const data = {
+
+  // add error handling
+  const loginData = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
-    role: formData.get("role") as string,
   }
 
 
   //const baseURL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 
-  const { data: userData, error } = await supabase.auth.signInWithPassword(data)
+  const { data: userData, error:signInError } = await supabase.auth.signInWithPassword(loginData)
 
   console.log(userData);
+  console.log(signInError);
+  console.log(loginData.email)
+
+  const { data, error } = await supabase
+  .from('users')
+  .select('role')
+
+  roleData = data![0].role;
+  console.log(data![0].role);
   console.log(error);
-  console.log(data.role);
+
+  
+ 
 
 
-  if (data.role == "moderator") {
+  if (roleData == "moderator") {
     console.log(userData.user?.id)
-    redirect("/moderator" + userData.user?.id);
+    redirect("/moderator/" + userData.user?.id);
   }
-  if (data.role == "familymember") {
+  if (roleData == "familymember") {
     redirect("/moderator");
   }
-  if (data.role == "familymember") {
+  if (roleData == "familymember") {
     redirect("/moderator");
   }
 
 
   if (error) {
+    console.log(error);
     redirect("/error");
   }
 
@@ -85,14 +99,4 @@ export async function signup(formData: FormData) {
   }
 
 
-
-
-
-
-  //console.log(signUpData.role);
-
-
-
-  revalidatePath('/', 'layout')
-  redirect('/')
 }
