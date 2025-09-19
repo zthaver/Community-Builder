@@ -1,5 +1,7 @@
 import React from "react"
 
+import Image from 'next/image'
+
 import {
     Card,
     CardAction,
@@ -10,26 +12,32 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
-const ArticleCard = () => {
-
+const ArticleCard = (articleData:any) => {
+         console.log(articleData.articleData.blogImage.formats.small.url);
+         let imageUrl: string = "/image.png";
+         if(articleData.articleData.blogImage.formats.small)
+         {
+             imageUrl = articleData.articleData.blogImage.formats.small.url
+         }
+         
     return (
-       <Card className="w-full max-w-sm">
+       <Card className="max-w-400 flex justify-between flex-shrink min-h-100">
       <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
-        <CardAction>
-          <Button variant="link">Sign Up</Button>
-        </CardAction>
+        <div className="flex object-fit:cover flex-col flex-shrink-0">
+          <Image
+          src={imageUrl} 
+          alt="blogTitle"
+          width={600}
+          height={400}/>
+        </div>
+        <CardTitle>{articleData.articleData.articleTitle}</CardTitle>
+        <CardDescription className="line-clamp-3">{articleData.articleData.articleText}</CardDescription>
       </CardHeader>
-      <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-        <Button variant="outline" className="w-full">
-          Login with Google
+      <CardFooter className="flex">
+        <Button type="submit" variant="ghost" className="w-full">
+          VIEW POST
         </Button>
       </CardFooter>
     </Card>

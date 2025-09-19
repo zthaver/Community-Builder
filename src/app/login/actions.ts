@@ -7,7 +7,7 @@ import { createClient } from '../../../utils/supabase/server'
 let id = 0;
 
 export async function login(formData: FormData) {
-  const supabase = await createClient("authenticated")
+  const supabase = await createClient();
 
   let roleData = "senior";
   // type-casting here for convenience
@@ -43,14 +43,13 @@ export async function login(formData: FormData) {
 
 
   if (roleData == "moderator") {
-    console.log(userData.user?.id)
-    redirect("/moderator/" + userData.user?.id);
+    redirect("/blog");
   }
   if (roleData == "familymember") {
-    redirect("/moderator");
+    //redirect("/moderator");
   }
   if (roleData == "familymember") {
-    redirect("/moderator");
+    //redirect("/moderator");
   }
 
 
@@ -73,7 +72,7 @@ export async function signup(formData: FormData) {
     role: formData.get("role") as string,
   }
   
-  const supabase = await createClient("");
+  const supabase = await createClient();
   const { error: errorSignup, data: userData } = await supabase.auth.signUp(signUpData);
   
 
