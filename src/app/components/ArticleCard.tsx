@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import { redirect } from 'next/navigation'
 
 const ArticleCard = (articleData:any) => {
          console.log(articleData.articleData.blogImage.formats.small.url);
@@ -36,12 +37,19 @@ const ArticleCard = (articleData:any) => {
         <CardDescription className="line-clamp-3">{articleData.articleData.articleText}</CardDescription>
       </CardHeader>
       <CardFooter className="flex">
-        <Button type="submit" variant="ghost" className="w-full">
+        <Button type="submit"  onClick ={ () =>directToArticle(articleData.articleData)}variant="ghost" className="w-full">
           VIEW POST
         </Button>
       </CardFooter>
     </Card>
     )
+
+    function directToArticle(data:any)
+    {
+      console.log(data.documentId)
+      let id:string = "/blog/" + data.documentId;
+      redirect(id);
+    }
 }
 
 

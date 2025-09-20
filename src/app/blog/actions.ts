@@ -26,8 +26,10 @@ export async function getblogData() {
 
 
 export async function getSlugifiedblogData(id:string) {
-    const blogResponse = fetch(`${process.env.CMS_API_URL}/${id}`)
-    console.log(blogResponse);
+    const blogResponse =  await fetch(`${process.env.CMS_API_URL}/${id}?populate=blogImage`)
+    const slugifiedData = await blogResponse.json();
+
+    return slugifiedData;
 
 
 }
