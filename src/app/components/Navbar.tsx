@@ -11,15 +11,26 @@ const Navbar = () => {
         <div className="flex-1 flex auto space-x-2 justify-center">
           <div className="flex items-center space-x-1">
             <HouseIcon color="grey" size={36} />
-            <Button variant="default">HOME</Button>
+            <Button variant="default">
+              <Link href="/">
+                HOME
+              </Link>
+            </Button>
           </div>
           <div className="flex items-center space-x-1">
             <BookIcon color="grey" size={36} />
-            <Button variant="default">ABOUT</Button>
+            <Button variant="default">
+              <Link href="/blog">
+               ARTICLES
+              </Link>
+            </Button>
           </div>
           <div className="flex items-center space-x-1">
             <ContactIcon color="grey" size={36} />
-            <Button variant="default">CONTACT</Button>
+            <Button variant="default">              
+              <Link href="/calendar">
+               EVENTS
+              </Link></Button>
           </div>
         </div>
         <div>

@@ -4,7 +4,7 @@ import ArticleCard from '../components/ArticleCard'
 const page = () => {
   return (
     <div>
-      <ArticleCard></ArticleCard>
+      <h1>home page</h1>
     </div>
 
   )
