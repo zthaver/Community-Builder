@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation';
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { getSlugifiedblogData } from '../actions';
 import Image from 'next/image';
 
@@ -15,7 +15,7 @@ export type Blog = {
 const Blog = () => {
   const [postData,setPostData] = useState<Blog>();
   const params = useParams();
-  useLayoutEffect(()=>{
+  useEffect(()=>{
 
     const fetchblogData = async () =>{
     if (!params?.id) return;

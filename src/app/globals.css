@@ -44,6 +44,16 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+.fc .fc-daygrid-event {
+  font-size: 2.0rem;       /* Change text size */
+  padding: 4px 6px;        /* Add padding inside events */
+  line-height: 1.4;        /* Increase vertical spacing */
+}
+
+/* Optional: make them taller */
+.fc .fc-daygrid-event-harness {
+  min-height: 28px;
+}
 
 :root {
   --fc-small-font-size: 1em;

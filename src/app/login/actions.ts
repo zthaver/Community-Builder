@@ -94,7 +94,12 @@ export async function signup(formData: FormData) {
         role:signUpData.role,
       });
       
- redirect('/home ')
+      if (errorInsert) {
+        console.log("Error inserting user data:", errorInsert);
+        redirect('/error');
+      }
+      
+      redirect('/home')
   }
 
 

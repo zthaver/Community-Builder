@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import ArticleCard from '../components/ArticleCard';
 
@@ -8,7 +8,7 @@ import {getblogData} from "./actions";
 
 const  Blog =  () => {
   const [postData,setPostData] = useState<any[]>([]);
-  useLayoutEffect(()=>{
+  useEffect(()=>{
     const fetchblogData = async () =>{
     const blogData = await getblogData();
     setPostData(blogData.data);
