@@ -10,8 +10,8 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button";
+} from "../components/ui/card"
+import { Button } from "../components/ui/button";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { redirect } from 'next/navigation'
 

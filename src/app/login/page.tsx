@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { login, signup } from './actions';
-import { Button } from "../../components/ui/button";
+import { Button } from "../../app/components/ui/button";
 import Navbar from '../components/Navbar';
 
 export default function LoginPage() {

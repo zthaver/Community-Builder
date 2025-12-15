@@ -1,9 +1,30 @@
-import { Button } from '@/components/ui/button'
-import React from 'react'
+'use client'
+
+import { Button } from './ui/button'
+import React, { useEffect, useState } from 'react'
 import { BookIcon ,ContactIcon, HouseIcon } from 'lucide-react';
 import Link from 'next/link';
+import { createClient } from '../../../utils/supabase/client';
+
 
 const Navbar = () => {
+    const supabase = createClient();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      console.log("data is " +  data.user?.id);
+      const { data:userData, error } = await supabase
+  .from("users")
+  .select("name")
+  .eq("id", data.user?.id)
+  .single();
+  console.log(userData);
+      setUser(userData?.name);
+    });
+  }, []);
+
+
   return (
     <nav className="w-full  h-full px-4 py-2 shadow-xl bg-white">
       <div className="flex justify-between md:justify-start items-center  space-x-90">
@@ -34,14 +55,19 @@ const Navbar = () => {
           </div>
         </div>
         <div>
-          <Button asChild variant="ghost">
-            <Link href="/login">
-              LOGIN
-            </Link>
-          </Button>
+          {user ? (
+            <p className="font-medium">Hello, {user}</p>
+          ) : (
+            <Button asChild variant="ghost">
+              <Link href="/login">
+                LOGIN
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </nav>
+          
   )
 }
 

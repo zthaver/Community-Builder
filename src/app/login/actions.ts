@@ -43,7 +43,7 @@ export async function login(formData: FormData) {
 
 
   if (roleData == "moderator") {
-    redirect("/blog");
+    //redirect("/blog");
   }
   if (roleData == "familymember") {
     //redirect("/moderator");
@@ -83,12 +83,14 @@ export async function signup(formData: FormData) {
   }
 
   else  {
+    console.log(userData.user?.id);
     //const supabase = await createClient("");
     const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
     const { data: insertedData, error: errorInsert } = await supabase
       .from('users')
       .insert({
-        id: userData?.user?.id, // UUID from auth
+        id: user?.id, // UUID from auth
         name: signUpData.name,
         email:signUpData.email,
         role:signUpData.role,
@@ -96,10 +98,11 @@ export async function signup(formData: FormData) {
       
       if (errorInsert) {
         console.log("Error inserting user data:", errorInsert);
+        console.log(session?.user.id);
         redirect('/error');
       }
       
-      redirect('/home')
+      redirect('/')
   }
 
 
