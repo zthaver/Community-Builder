@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation'
 
-import { createServerClient } from '../../../utils/supabase/server'
 import DemoClientComponent from '../components/DemoClientComponent'
 
 export default async function PrivatePage() {
