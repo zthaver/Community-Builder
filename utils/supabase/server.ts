@@ -1,9 +1,9 @@
-'use server'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
-  const cookieStore = await cookies()
+const cookieStore = await cookies()
 
 
 
@@ -29,4 +29,4 @@ export async function createClient() {
       },
     }
   )
- }
+}

@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 
-import ArticleCard from '../components/ArticleCard';
+import ArticleCard from '../../components/ArticleCard';
 
-import {getblogData} from "./actions";
+import {getblogData} from "../../blog/actions";
 
 const  Blog =  () => {
   const [postData,setPostData] = useState<any[]>([]);

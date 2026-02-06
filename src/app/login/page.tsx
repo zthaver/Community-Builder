@@ -1,75 +1,187 @@
-'use client'
+"use client";
 
-
-import { useState } from 'react';
-import { login, signup } from './actions';
+import React, { useState } from "react";
+import { signup } from "./actions";
+import { useRouter } from "next/navigation";
+import { createClient } from "../../../utils/supabase/client";
 import { Button } from "../../app/components/ui/button";
-import Navbar from '../components/Navbar';
 
 export default function LoginPage() {
-  const [userRole, setUserRole] = useState("");
+  // 🔐 Supabase client + router
+  const supabase = createClient();
+  const router = useRouter();
+
+  /* =======================
+      LOGIN (CLIENT SIDE)
+     ======================= */
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setLoginError(null);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: loginEmail,
+      password: loginPassword,
+    });
+
+    if (error) {
+      setLoginError("Invalid email or password");
+      setLoginLoading(false);
+      return;
+    }
+
+    // ✅ IMPORTANT: wait for session before redirect
+    if (data.session) {
+      router.replace("/home");
+    }
+  };
+
+  /* =======================
+      SIGNUP (SERVER ACTION)
+     ======================= */
+  const [signupState, signupAction, signupPending] =
+    React.useActionState(signup, { error: null });
+
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [userRole, setUserRole] = useState("");
 
   return (
+    <div className="min-h-screen flex items-start justify-center pt-10 gap-16">
+      {/* ================= LOGIN FORM ================= */}
+      <div className="flex flex-col items-start">
+        <h1 className="text-[60px] mb-4">Login</h1>
 
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <label>Email:</label>
+          <input
+            type="email"
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+            className="p-2 border rounded"
+            disabled={loginLoading}
+          />
 
+          <label>Password:</label>
+          <input
+            type="password"
+            value={loginPassword}
+            onChange={(e) => setLoginPassword(e.target.value)}
+            className="p-2 border rounded"
+            disabled={loginLoading}
+          />
 
-  <div>
-  <Navbar />
+          {loginError && (
+            <p className="text-red-500 text-sm">{loginError}</p>
+          )}
 
-  <div className="min-h-screen flex items-start justify-center pt-10 gap-16">
-    {/* Login Form */}
-    <div className="flex flex-col items-start">
-      <h1 className="text-[60px] mb-4">Login</h1>
-      <form className="flex flex-col gap-4">
-        <label htmlFor="login-email">Email:</label>
-        <input id="login-email" name="email" type="email" required className="p-2 border rounded" />
+          <Button
+            type="submit"
+            className="bg-blue-500 text-white py-2 rounded mt-2 flex items-center justify-center gap-2"
+            disabled={loginLoading}
+          >
+            {loginLoading && (
+              <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+            )}
+            Login
+          </Button>
+        </form>
+      </div>
 
-        <label htmlFor="login-password">Password:</label>
-        <input id="login-password" name="password" type="password" required className="p-2 border rounded" />
+      {/* ================= SIGNUP FORM ================= */}
+      <div className="flex flex-col items-start">
+        <h1 className="text-[60px] mb-4">Sign Up</h1>
 
-        <Button formAction={login} className="bg-blue-500 text-white py-2 rounded mt-2">
-          Login
-        </Button>
-      </form>
+        <form action={signupAction} className="flex flex-col gap-4">
+          <label>Name:</label>
+          <input
+            name="name"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className={`p-2 border rounded ${
+              signupState.fieldErrors?.name ? "border-red-500" : ""
+            }`}
+          />
+          {signupState.fieldErrors?.name && (
+            <p className="text-red-500 text-sm">
+              {signupState.fieldErrors.name}
+            </p>
+          )}
+
+          <label>Email:</label>
+          <input
+            name="email"
+            type="email"
+            value={userEmail}
+            onChange={(e) => setUserEmail(e.target.value)}
+            className={`p-2 border rounded ${
+              signupState.fieldErrors?.email ? "border-red-500" : ""
+            }`}
+          />
+          {signupState.fieldErrors?.email && (
+            <p className="text-red-500 text-sm">
+              {signupState.fieldErrors.email}
+            </p>
+          )}
+
+          <label>Password:</label>
+          <input
+            name="password"
+            type="password"
+            value={userPassword}
+            onChange={(e) => setUserPassword(e.target.value)}
+            className={`p-2 border rounded ${
+              signupState.fieldErrors?.password ? "border-red-500" : ""
+            }`}
+          />
+          {signupState.fieldErrors?.password && (
+            <p className="text-red-500 text-sm">
+              {signupState.fieldErrors.password}
+            </p>
+          )}
+
+          <label>Role:</label>
+          <select
+            name="role"
+            value={userRole}
+            onChange={(e) => setUserRole(e.target.value)}
+            className={`p-2 border rounded ${
+              signupState.fieldErrors?.role ? "border-red-500" : ""
+            }`}
+          >
+            <option value="">Select role</option>
+            <option value="senior">Senior</option>
+            <option value="moderator">Moderator</option>
+            <option value="familymember">Family Member</option>
+          </select>
+          {signupState.fieldErrors?.role && (
+            <p className="text-red-500 text-sm">
+              {signupState.fieldErrors.role}
+            </p>
+          )}
+
+          {signupState.error && !signupState.fieldErrors && (
+            <p className="text-red-500 text-sm">{signupState.error}</p>
+          )}
+
+          <Button
+            type="submit"
+            className="bg-green-500 text-white py-2 rounded mt-2 flex items-center justify-center gap-2"
+            disabled={signupPending}
+          >
+            {signupPending && (
+              <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+            )}
+            Sign Up
+          </Button>
+        </form>
+      </div>
     </div>
-
-    {/* Sign Up Form */}
-    <div className="flex flex-col items-start">
-      <h1 className="text-[60px] mb-4">Sign Up</h1>
-      <form className="flex flex-col gap-4">
-        <label htmlFor="signup-name">Name:</label>
-        <input onChange={e => setUserName(e.target.value)} id="signup-name" name="name" type="text" required className="p-2 border rounded" />
-
-        <label htmlFor="signup-email">Email:</label>
-        <input onChange={e => setUserEmail(e.target.value)} id="signup-email" name="email" type="email" required className="p-2 border rounded" />
-
-        <label htmlFor="signup-password">Password:</label>
-        <input  id="signup-password" name="password" type="password" required className="p-2 border rounded" />
-
-        <label htmlFor="signup-role">Select Role:</label>
-        <select
-          id="signup-role"
-          name="role"
-          value={userRole}
-          onChange={e => setUserRole(e.target.value!)}
-          className="p-2 border rounded"
-        >
-          <option value="senior">Senior</option>
-          <option value="moderator">Moderator</option>
-          <option value="familymember">Family Member</option>
-        </select>
-
-        <Button variant="ghost" formAction={signup} className="bg-green-500 text-white py-2 rounded mt-2">
-          Sign Up
-        </Button>
-      </form>
-    </div>
-  </div>
-</div>
-
-
-
-  )
+  );
 }

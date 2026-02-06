@@ -5,9 +5,6 @@ export async function getCalendarData() {
     const calendarResponse =  await fetch(apiUrl);
     const calendarData = await calendarResponse.json();
     console.log(calendarData)
-
     return calendarData;
-
-
 }
 

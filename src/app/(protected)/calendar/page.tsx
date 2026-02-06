@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
-import { getCalendarData } from './actions'
-import EventPopover from '../components/EventPopover'
-import { Popover, PopoverTrigger } from '../components/ui/popover'
-import { PopoverContent } from '../components/popover'
-import { Button } from '../components/ui/button'
+import { getCalendarData } from '../../calendar/actions'
+import EventPopover from '../../components/EventPopover'
+import { Popover, PopoverTrigger } from '../../components/ui/popover'
+import { PopoverContent } from '../../components/popover'
+import { Button } from '../../components/ui/button'
 type ExtendedProps =
   {
     link: string,
@@ -33,10 +33,10 @@ const formatDateTime = (datetimeStr: string, timeZone = 'America/New_York') =>
     })
     .replace(/(\d+)(?=,)/, (_, day) => {
       const n = Number(day);
-      const suffix = (n > 3 && n < 21) ? 'TH' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th');
+      const suffix = (n > 3 && n < 21) ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th');
       return `${n}${suffix}`;
     })
-    .replace(',', 'at');
+    .replace(',', ' at');
 
 const page = () => {
   let [calendarData, setCalendarData] = useState([]);
@@ -62,8 +62,8 @@ const page = () => {
     setPopoverOpen(true);
     setSelectedEvent({
       title: clickInfo.event.title,
-      start: formatDateTime(clickInfo.event.start?.toLocaleString()),
-      end: formatDateTime(clickInfo.event.end?.toLocaleString()),
+      start: formatDateTime(clickInfo.event.start),
+      end: formatDateTime(clickInfo.event.end),
       extendedProps: clickInfo.event.extendedProps, // include extra data if any
     });
     if (selectedEvent) {
@@ -86,11 +86,33 @@ const page = () => {
   }, [selectedEvent])
   return (
     <div>
-      <FullCalendar
-        events={calendarData}
-        plugins={[dayGridPlugin]}
-        initialView="dayGridMonth"
-        eventClick={handleEventClick} />
+      <style>{`
+        .calendar-large .fc {
+          font-size: 20px;
+        }
+        .calendar-large .fc-col-header-cell {
+          padding: 12px 0;
+          font-size: 18px;
+        }
+        .calendar-large .fc-daygrid-day {
+          height: 100px;
+        }
+        .calendar-large .fc-daygrid-day-number {
+          padding: 8px;
+          font-size: 16px;
+        }
+        .calendar-large .fc-event {
+          font-size: 20px;
+        }
+      `}</style>
+      <div className="calendar-large">
+        <FullCalendar
+          events={calendarData}
+          plugins={[dayGridPlugin]}
+          initialView="dayGridMonth"
+          contentHeight="auto"
+          eventClick={handleEventClick} />
+      </div>
       <div className='absolute z-50'
         style={{
           top: clickPosition.y,
@@ -126,13 +148,11 @@ const page = () => {
                   </p>
                 )}
               </div>
-
             </div>
           </PopoverContent>
         </Popover>
       </div>
     </div>
-
   )
 }
 

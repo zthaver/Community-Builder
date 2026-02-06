@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import ReduxProvider from "../store/ReduxProvider";
 import { Geist, Geist_Mono, Josefin_Sans, Nunito_Sans} from "next/font/google";
 import "./globals.css";
+import Navbar from "./components/Navbar/Navbar";
+import AuthProvider from "./auth/confirm/AuthProvider";
 
 
 const josefinSans = Josefin_Sans({
@@ -29,7 +32,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${nunitoSans.className} antialiased`}>
-        {children}
+        <ReduxProvider>
+            <Navbar/>
+            {children}
+        </ReduxProvider>
       </body>
     </html>
   );
