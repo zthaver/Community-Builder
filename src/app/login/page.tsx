@@ -35,9 +35,16 @@ export default function LoginPage() {
       return;
     }
 
-    // ✅ IMPORTANT: wait for session before redirect
+    // ✅ Refresh session to sync with server cookies, then full-page redirect
     if (data.session) {
-      router.replace("/home");
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        setLoginError("Login successful but session sync failed. Please refresh the page.");
+        setLoginLoading(false);
+        return;
+      }
+      await new Promise((r) => setTimeout(r, 100));
+      window.location.href = "/home";
     }
   };
 
