@@ -44,7 +44,6 @@ export async function login(prevState: FormState, formData: FormData): Promise<F
   // ✅ Redirect after successful login
   redirect('/home'); 
 }
-``
 
 /* =========================
    SIGNUP
