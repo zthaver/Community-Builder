@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { signup } from "./actions";
-import { useRouter } from "next/navigation";
-import { createClient } from "../../../utils/supabase/client";
-import { Button } from "../../app/components/ui/button";
+import React, { useState } from 'react';
+import { signup } from './actions';
+import { useRouter } from 'next/navigation';
+import { createClient } from '../../../utils/supabase/client';
+import { Button } from '../../app/components/ui/button';
 
 export default function LoginPage() {
   // 🔐 Supabase client + router
@@ -14,8 +14,8 @@ export default function LoginPage() {
   /* =======================
       LOGIN (CLIENT SIDE)
      ======================= */
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -30,7 +30,7 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setLoginError("Invalid email or password");
+      setLoginError('Invalid email or password');
       setLoginLoading(false);
       return;
     }
@@ -39,25 +39,29 @@ export default function LoginPage() {
     if (data.session) {
       const { error: refreshError } = await supabase.auth.refreshSession();
       if (refreshError) {
-        setLoginError("Login successful but session sync failed. Please refresh the page.");
+        setLoginError(
+          'Login successful but session sync failed. Please refresh the page.',
+        );
         setLoginLoading(false);
         return;
       }
       await new Promise((r) => setTimeout(r, 100));
-      window.location.href = "/home";
+      window.location.href = '/home';
     }
   };
 
   /* =======================
       SIGNUP (SERVER ACTION)
      ======================= */
-  const [signupState, signupAction, signupPending] =
-    React.useActionState(signup, { error: null });
+  const [signupState, signupAction, signupPending] = React.useActionState(
+    signup,
+    { error: null },
+  );
 
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
-  const [userRole, setUserRole] = useState("");
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [userRole, setUserRole] = useState('');
 
   return (
     <div className="min-h-screen flex items-start justify-center pt-10 gap-16">
@@ -84,9 +88,7 @@ export default function LoginPage() {
             disabled={loginLoading}
           />
 
-          {loginError && (
-            <p className="text-red-500 text-sm">{loginError}</p>
-          )}
+          {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
 
           <Button
             type="submit"
@@ -112,7 +114,7 @@ export default function LoginPage() {
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             className={`p-2 border rounded ${
-              signupState.fieldErrors?.name ? "border-red-500" : ""
+              signupState.fieldErrors?.name ? 'border-red-500' : ''
             }`}
           />
           {signupState.fieldErrors?.name && (
@@ -128,7 +130,7 @@ export default function LoginPage() {
             value={userEmail}
             onChange={(e) => setUserEmail(e.target.value)}
             className={`p-2 border rounded ${
-              signupState.fieldErrors?.email ? "border-red-500" : ""
+              signupState.fieldErrors?.email ? 'border-red-500' : ''
             }`}
           />
           {signupState.fieldErrors?.email && (
@@ -144,7 +146,7 @@ export default function LoginPage() {
             value={userPassword}
             onChange={(e) => setUserPassword(e.target.value)}
             className={`p-2 border rounded ${
-              signupState.fieldErrors?.password ? "border-red-500" : ""
+              signupState.fieldErrors?.password ? 'border-red-500' : ''
             }`}
           />
           {signupState.fieldErrors?.password && (
@@ -159,7 +161,7 @@ export default function LoginPage() {
             value={userRole}
             onChange={(e) => setUserRole(e.target.value)}
             className={`p-2 border rounded ${
-              signupState.fieldErrors?.role ? "border-red-500" : ""
+              signupState.fieldErrors?.role ? 'border-red-500' : ''
             }`}
           >
             <option value="">Select role</option>

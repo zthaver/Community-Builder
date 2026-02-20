@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Button } from "../ui/button";
-import React, { useEffect } from "react";
-import { BookIcon, ContactIcon, HouseIcon } from "lucide-react";
-import Link from "next/link";
-import { createClient } from "../../../../utils/supabase/client";
-import { logout } from "./actions";
+import { Button } from '../ui/button';
+import React, { useEffect } from 'react';
+import { BookIcon, ContactIcon, HouseIcon } from 'lucide-react';
+import Link from 'next/link';
+import { createClient } from '../../../../utils/supabase/client';
+import { logout } from './actions';
 
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setUser, clearUser } from "../../../store/slices/authSlice";
-import { useRouter, usePathname } from 'next/navigation'
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { setUser, clearUser } from '../../../store/slices/authSlice';
+import { useRouter, usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const supabase = createClient();
@@ -20,9 +20,8 @@ const Navbar = () => {
   const user = useAppSelector((state) => state.auth?.user);
 
   async function handleLogout() {
-await supabase.auth.signOut();
+    await supabase.auth.signOut();
   }
-
 
   return (
     <nav className="w-full h-full px-4 py-2 shadow-xl bg-white">
@@ -32,21 +31,32 @@ await supabase.auth.signOut();
         <div className="flex-1 flex auto space-x-2 justify-center">
           <div className="flex items-center space-x-1">
             <HouseIcon color="grey" size={36} />
-            <Button variant={pathname === "/" ? "ghost" : "default"} className={pathname === "/" ? "bg-blue-500 text-white" : ""}>
+            <Button
+              variant={pathname === '/' ? 'ghost' : 'default'}
+              className={pathname === '/' ? 'bg-blue-500 text-white' : ''}
+            >
               <Link href="/">Home</Link>
             </Button>
           </div>
 
           <div className="flex items-center space-x-1">
             <BookIcon color="grey" size={36} />
-            <Button variant={pathname === "/blog" ? "ghost" : "default"} className={pathname === "/blog" ? "bg-blue-500 text-white" : ""}>
+            <Button
+              variant={pathname === '/blog' ? 'ghost' : 'default'}
+              className={pathname === '/blog' ? 'bg-blue-500 text-white' : ''}
+            >
               <Link href="/blog">Articles</Link>
             </Button>
           </div>
 
           <div className="flex items-center space-x-1">
             <ContactIcon color="grey" size={36} />
-            <Button variant={pathname === "/calendar" ? "ghost" : "default"} className={pathname === "/calendar" ? "bg-blue-500 text-white" : ""}>
+            <Button
+              variant={pathname === '/calendar' ? 'ghost' : 'default'}
+              className={
+                pathname === '/calendar' ? 'bg-blue-500 text-white' : ''
+              }
+            >
               <Link href="/calendar">Events</Link>
             </Button>
           </div>
@@ -56,11 +66,11 @@ await supabase.auth.signOut();
           {user ? (
             <div className="flex items-center gap-4">
               <span>Hello, {user.email}</span>
-                <Button variant="ghost" onClick={handleLogout}>
-                  Logout
-                </Button>
+              <Button variant="ghost" onClick={handleLogout}>
+                Logout
+              </Button>
             </div>
-          ):(
+          ) : (
             <Button variant="ghost">
               <Link href="/login">LOGIN</Link>
             </Button>

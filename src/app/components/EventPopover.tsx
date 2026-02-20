@@ -1,15 +1,24 @@
-import { Popover, PopoverTrigger, PopoverContent } from "../components/ui/popover";
-import { Card, CardHeader, CardContent, CardTitle } from "../components/ui/card";
- type Event = {
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '../components/ui/popover';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+} from '../components/ui/card';
+type Event = {
   id: string;
   title: string;
   description: string;
   location?: string;
-  start: string;  // allow ISO string or Date
+  start: string; // allow ISO string or Date
   end: string;
   allDay?: boolean;
-  color?: string;        // for event category colors
-}
+  color?: string; // for event category colors
+};
 interface EventPopoverProps {
   event: Event;
 }
