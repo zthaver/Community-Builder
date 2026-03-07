@@ -12,8 +12,16 @@ import Image from 'next/image';
 import { Textarea } from '../../../../@/components/ui/textarea'; // Update the import path as needed
 import { Button } from '../../components/ui/button';
 
+type BlogImage = {
+  formats: {
+    large: {
+      url: string;
+    };
+  };
+};
+
 export type Blog = {
-  blogImage: any;
+  blogImage: BlogImage;
   id: string;
   articleTitle: string;
   articleText: string;
@@ -21,7 +29,7 @@ export type Blog = {
 
 const Blog = () => {
   const [postData, setPostData] = useState<Blog>();
-  const [comments, setComments] = useState<any[] | null>(null);
+  const [comments, setComments] = useState<Comment[] | null>(null);
   const [commentText, setCommentText] = useState<string>('');
   const params = useParams();
 
