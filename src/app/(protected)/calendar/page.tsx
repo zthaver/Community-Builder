@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
+import dayGridPlugin from '@fullcalendar/daygrid';
 import { getCalendarData } from '../../calendar/actions';
-import EventPopover from '../../components/EventPopover';
 import { Popover, PopoverTrigger } from '../../components/ui/popover';
 import { PopoverContent } from '../../components/popover';
-import { Button } from '../../components/ui/button';
+import { CalendarIcon, ClockIcon, MapPinIcon, LinkIcon, XIcon, Loader2Icon } from 'lucide-react';
+
 type ExtendedProps = {
   link: string;
   location: string;
@@ -19,6 +19,7 @@ type SelectedEvent = {
   end: string;
   extendedProps: ExtendedProps;
 };
+
 const formatDateTime = (datetimeStr: string, timeZone = 'America/New_York') =>
   new Date(datetimeStr)
     .toLocaleString('en-US', {
@@ -38,11 +39,12 @@ const formatDateTime = (datetimeStr: string, timeZone = 'America/New_York') =>
     })
     .replace(',', ' at');
 
-const page = () => {
-  let [calendarData, setCalendarData] = useState([]);
-  let [selectedEvent, setSelectedEvent] = useState<SelectedEvent | null>(null);
-  let [popoverOpen, setPopoverOpen] = useState(false);
+const CalendarPage = () => {
+  const [calendarData, setCalendarData] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState<SelectedEvent | null>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
+  const [loading, setLoading] = useState(true);
 
   const getAbsoluteLink = (link?: string) => {
     if (!link) return '#';
@@ -51,14 +53,9 @@ const page = () => {
       : `https://${link}`;
   };
 
-  const handlePopoverClose = () => {
-    setPopoverOpen(false);
-  };
   const handleEventClick = (clickInfo: any) => {
-    console.log(clickInfo.jsEvent.clientX);
-    console.log(clickInfo.jsEvent.clientY);
     setClickPosition({
-      x: clickInfo.jsEvent.clientX + 10,
+      x: Math.min(clickInfo.jsEvent.clientX + 10, window.innerWidth - 400),
       y: clickInfo.jsEvent.clientY + 10,
     });
     setPopoverOpen(true);
@@ -66,96 +63,222 @@ const page = () => {
       title: clickInfo.event.title,
       start: formatDateTime(clickInfo.event.start),
       end: formatDateTime(clickInfo.event.end),
-      extendedProps: clickInfo.event.extendedProps, // include extra data if any
+      extendedProps: clickInfo.event.extendedProps,
     });
-    if (selectedEvent) {
-      console.log('selectedevent' + selectedEvent?.title);
-    }
   };
+
   useEffect(() => {
     const fetchCalendarData = async () => {
-      const blogData = await getCalendarData();
-      setCalendarData(blogData.data);
+      const data = await getCalendarData();
+      setCalendarData(data.data || []);
+      setLoading(false);
     };
 
     fetchCalendarData();
-    if (selectedEvent) {
-      console.log('Selected event updated:', selectedEvent.extendedProps.link);
-    }
-  }, [selectedEvent]);
-  return (
-    <div>
-      <style>{`
-        .calendar-large .fc {
-          font-size: 20px;
-        }
-        .calendar-large .fc-col-header-cell {
-          padding: 12px 0;
-          font-size: 18px;
-        }
-        .calendar-large .fc-daygrid-day {
-          height: 100px;
-        }
-        .calendar-large .fc-daygrid-day-number {
-          padding: 8px;
-          font-size: 16px;
-        }
-        .calendar-large .fc-event {
-          font-size: 20px;
-        }
-      `}</style>
-      <div className="calendar-large">
-        <FullCalendar
-          events={calendarData}
-          plugins={[dayGridPlugin]}
-          initialView="dayGridMonth"
-          contentHeight="auto"
-          eventClick={handleEventClick}
-        />
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2Icon className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-xl text-gray-600">Loading events...</p>
+        </div>
       </div>
-      <div
-        className="absolute z-50"
-        style={{
-          top: clickPosition.y,
-          left: clickPosition.x,
-        }}
-      >
-        <Popover
-          open={popoverOpen}
-          onOpenChange={(open) => {
-            setPopoverOpen(open);
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Page Header */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div className="bg-purple-100 p-4 rounded-full">
+              <CalendarIcon className="w-10 h-10 text-purple-600" />
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">Community Events</h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Find workshops, social gatherings, and activities to participate in. 
+            Click on any event to see more details.
+          </p>
+        </div>
+
+        {/* Instructions */}
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-5 mb-8">
+          <p className="text-lg text-blue-800 text-center">
+            <strong>Tip:</strong> Click on any colored event in the calendar below to see more information about it.
+          </p>
+        </div>
+
+        {/* Calendar */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <style>{`
+            .calendar-elderly .fc {
+              font-size: 1.25rem;
+            }
+            .calendar-elderly .fc-toolbar-title {
+              font-size: 1.75rem !important;
+              font-weight: 700;
+            }
+            .calendar-elderly .fc-button {
+              font-size: 1.125rem !important;
+              padding: 0.75rem 1.25rem !important;
+              min-height: 48px;
+              border-radius: 0.5rem !important;
+            }
+            .calendar-elderly .fc-col-header-cell {
+              padding: 16px 0;
+              font-size: 1.125rem;
+              font-weight: 600;
+              background-color: #f3f4f6;
+            }
+            .calendar-elderly .fc-daygrid-day {
+              min-height: 120px;
+            }
+            .calendar-elderly .fc-daygrid-day-number {
+              padding: 12px;
+              font-size: 1.25rem;
+              font-weight: 500;
+            }
+            .calendar-elderly .fc-event {
+              font-size: 1.125rem !important;
+              padding: 8px 12px !important;
+              border-radius: 8px !important;
+              cursor: pointer;
+              min-height: 40px;
+            }
+            .calendar-elderly .fc-event:hover {
+              transform: scale(1.02);
+              box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+            .calendar-elderly .fc-daygrid-event-harness {
+              margin-bottom: 4px;
+            }
+            .calendar-elderly .fc-today-button {
+              background-color: #3b82f6 !important;
+              border-color: #3b82f6 !important;
+            }
+            .calendar-elderly .fc-prev-button,
+            .calendar-elderly .fc-next-button {
+              background-color: #6b7280 !important;
+              border-color: #6b7280 !important;
+            }
+          `}</style>
+          <div className="calendar-elderly">
+            <FullCalendar
+              events={calendarData}
+              plugins={[dayGridPlugin]}
+              initialView="dayGridMonth"
+              contentHeight="auto"
+              eventClick={handleEventClick}
+              headerToolbar={{
+                left: 'prev,next today',
+                center: 'title',
+                right: '',
+              }}
+              buttonText={{
+                today: 'Go to Today',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Event Popover */}
+        <div
+          className="fixed z-50"
+          style={{
+            top: clickPosition.y,
+            left: clickPosition.x,
           }}
         >
-          <PopoverTrigger>
-            <div style={{ width: 1, height: 1 }} />{' '}
-            {/* Invisible trigger at click position */}
-          </PopoverTrigger>
-          <PopoverContent className="w-80">
-            <div className="grid gap-4">
-              {selectedEvent?.title}
-              <div className="space-y-2">Starts: {selectedEvent?.start}</div>
-              <div className="space-y-2">Ends {selectedEvent?.end}</div>
-              <div className="space-y-2">
-                {selectedEvent?.extendedProps?.link && (
-                  <p>
-                    Link:{' '}
-                    <a
-                      href={getAbsoluteLink(selectedEvent.extendedProps.link)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
+          <Popover
+            open={popoverOpen}
+            onOpenChange={(open) => {
+              setPopoverOpen(open);
+            }}
+          >
+            <PopoverTrigger>
+              <div style={{ width: 1, height: 1 }} />
+            </PopoverTrigger>
+            <PopoverContent className="w-96 p-0">
+              <div className="bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden">
+                {/* Header */}
+                <div className="bg-purple-600 text-white p-5">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-2xl font-bold pr-8">{selectedEvent?.title}</h3>
+                    <button 
+                      onClick={() => setPopoverOpen(false)}
+                      className="p-2 hover:bg-purple-700 rounded-lg transition-colors"
                     >
-                      {selectedEvent.extendedProps.link}
-                    </a>
-                  </p>
-                )}
+                      <XIcon size={24} />
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Content */}
+                <div className="p-5 space-y-4">
+                  <div className="flex items-start gap-3">
+                    <ClockIcon className="w-6 h-6 text-green-600 mt-1 shrink-0" />
+                    <div>
+                      <p className="text-lg font-semibold text-gray-700">Starts</p>
+                      <p className="text-lg text-gray-900">{selectedEvent?.start}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <ClockIcon className="w-6 h-6 text-red-500 mt-1 shrink-0" />
+                    <div>
+                      <p className="text-lg font-semibold text-gray-700">Ends</p>
+                      <p className="text-lg text-gray-900">{selectedEvent?.end}</p>
+                    </div>
+                  </div>
+
+                  {selectedEvent?.extendedProps?.location && (
+                    <div className="flex items-start gap-3">
+                      <MapPinIcon className="w-6 h-6 text-blue-600 mt-1 shrink-0" />
+                      <div>
+                        <p className="text-lg font-semibold text-gray-700">Location</p>
+                        <p className="text-lg text-gray-900">{selectedEvent.extendedProps.location}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedEvent?.extendedProps?.link && (
+                    <div className="flex items-start gap-3">
+                      <LinkIcon className="w-6 h-6 text-purple-600 mt-1 shrink-0" />
+                      <div>
+                        <p className="text-lg font-semibold text-gray-700">Event Link</p>
+                        <a
+                          href={getAbsoluteLink(selectedEvent.extendedProps.link)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-lg text-blue-600 hover:text-blue-800 underline break-all"
+                        >
+                          Click here to join or learn more
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="bg-gray-50 p-4 border-t border-gray-200">
+                  <button
+                    onClick={() => setPopoverOpen(false)}
+                    className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-lg font-semibold py-3 px-6 rounded-xl transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
     </div>
   );
 };
 
-export default page;
+export default CalendarPage;

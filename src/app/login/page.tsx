@@ -5,9 +5,9 @@ import { signup } from './actions';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../../utils/supabase/client';
 import { Button } from '../../app/components/ui/button';
+import { MailIcon, LockIcon, UserIcon, UsersIcon } from 'lucide-react';
 
 export default function LoginPage() {
-  // 🔐 Supabase client + router
   const supabase = createClient();
   const router = useRouter();
 
@@ -30,12 +30,11 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setLoginError('Invalid email or password');
+      setLoginError('Invalid email or password. Please try again.');
       setLoginLoading(false);
       return;
     }
 
-    // ✅ Refresh session to sync with server cookies, then full-page redirect
     if (data.session) {
       const { error: refreshError } = await supabase.auth.refreshSession();
       if (refreshError) {
@@ -64,132 +63,185 @@ export default function LoginPage() {
   const [userRole, setUserRole] = useState('');
 
   return (
-    <div className="min-h-screen flex items-start justify-center pt-10 gap-16">
-      {/* ================= LOGIN FORM ================= */}
-      <div className="flex flex-col items-start">
-        <h1 className="text-[60px] mb-4">Login</h1>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8 px-4">
+      <div className="max-w-5xl mx-auto">
+        {/* Page Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">Welcome to Community Builder</h1>
+          <p className="text-xl text-gray-600">Sign in to your account or create a new one</p>
+        </div>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={loginEmail}
-            onChange={(e) => setLoginEmail(e.target.value)}
-            className="p-2 border rounded"
-            disabled={loginLoading}
-          />
+        <div className="flex flex-col lg:flex-row gap-8 justify-center">
+          {/* ================= LOGIN FORM ================= */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full lg:w-[420px]">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Sign In</h2>
+            <p className="text-lg text-gray-600 mb-6 text-center">Already have an account? Sign in below.</p>
 
-          <label>Password:</label>
-          <input
-            type="password"
-            value={loginPassword}
-            onChange={(e) => setLoginPassword(e.target.value)}
-            className="p-2 border rounded"
-            disabled={loginLoading}
-          />
+            <form onSubmit={handleLogin} className="flex flex-col gap-5">
+              <div>
+                <label className="block text-lg font-semibold text-gray-700 mb-2">
+                  <MailIcon className="inline w-5 h-5 mr-2" />
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="w-full p-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                  placeholder="your.email@example.com"
+                  disabled={loginLoading}
+                />
+              </div>
 
-          {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
+              <div>
+                <label className="block text-lg font-semibold text-gray-700 mb-2">
+                  <LockIcon className="inline w-5 h-5 mr-2" />
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="w-full p-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                  placeholder="Enter your password"
+                  disabled={loginLoading}
+                />
+              </div>
 
-          <Button
-            type="submit"
-            className="bg-blue-500 text-white py-2 rounded mt-2 flex items-center justify-center gap-2"
-            disabled={loginLoading}
-          >
-            {loginLoading && (
-              <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-            )}
-            Login
-          </Button>
-        </form>
-      </div>
+              {loginError && (
+                <div className="bg-red-50 border-2 border-red-300 text-red-700 px-4 py-3 rounded-xl text-lg">
+                  {loginError}
+                </div>
+              )}
 
-      {/* ================= SIGNUP FORM ================= */}
-      <div className="flex flex-col items-start">
-        <h1 className="text-[60px] mb-4">Sign Up</h1>
+              <Button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xl py-4 rounded-xl mt-2 flex items-center justify-center gap-3 min-h-[60px]"
+                disabled={loginLoading}
+              >
+                {loginLoading && (
+                  <span className="animate-spin h-6 w-6 border-3 border-white border-t-transparent rounded-full"></span>
+                )}
+                Sign In
+              </Button>
+            </form>
+          </div>
 
-        <form action={signupAction} className="flex flex-col gap-4">
-          <label>Name:</label>
-          <input
-            name="name"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className={`p-2 border rounded ${
-              signupState.fieldErrors?.name ? 'border-red-500' : ''
-            }`}
-          />
-          {signupState.fieldErrors?.name && (
-            <p className="text-red-500 text-sm">
-              {signupState.fieldErrors.name}
-            </p>
-          )}
+          {/* ================= SIGNUP FORM ================= */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full lg:w-[420px]">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Create Account</h2>
+            <p className="text-lg text-gray-600 mb-6 text-center">New here? Sign up to join our community.</p>
 
-          <label>Email:</label>
-          <input
-            name="email"
-            type="email"
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
-            className={`p-2 border rounded ${
-              signupState.fieldErrors?.email ? 'border-red-500' : ''
-            }`}
-          />
-          {signupState.fieldErrors?.email && (
-            <p className="text-red-500 text-sm">
-              {signupState.fieldErrors.email}
-            </p>
-          )}
+            <form action={signupAction} className="flex flex-col gap-5">
+              <div>
+                <label className="block text-lg font-semibold text-gray-700 mb-2">
+                  <UserIcon className="inline w-5 h-5 mr-2" />
+                  Your Name
+                </label>
+                <input
+                  name="name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className={`w-full p-4 text-lg border-2 rounded-xl focus:ring-2 focus:ring-blue-200 ${
+                    signupState.fieldErrors?.name ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter your name"
+                />
+                {signupState.fieldErrors?.name && (
+                  <p className="text-red-600 text-base mt-1 font-medium">
+                    {signupState.fieldErrors.name}
+                  </p>
+                )}
+              </div>
 
-          <label>Password:</label>
-          <input
-            name="password"
-            type="password"
-            value={userPassword}
-            onChange={(e) => setUserPassword(e.target.value)}
-            className={`p-2 border rounded ${
-              signupState.fieldErrors?.password ? 'border-red-500' : ''
-            }`}
-          />
-          {signupState.fieldErrors?.password && (
-            <p className="text-red-500 text-sm">
-              {signupState.fieldErrors.password}
-            </p>
-          )}
+              <div>
+                <label className="block text-lg font-semibold text-gray-700 mb-2">
+                  <MailIcon className="inline w-5 h-5 mr-2" />
+                  Email Address
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  className={`w-full p-4 text-lg border-2 rounded-xl focus:ring-2 focus:ring-blue-200 ${
+                    signupState.fieldErrors?.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="your.email@example.com"
+                />
+                {signupState.fieldErrors?.email && (
+                  <p className="text-red-600 text-base mt-1 font-medium">
+                    {signupState.fieldErrors.email}
+                  </p>
+                )}
+              </div>
 
-          <label>Role:</label>
-          <select
-            name="role"
-            value={userRole}
-            onChange={(e) => setUserRole(e.target.value)}
-            className={`p-2 border rounded ${
-              signupState.fieldErrors?.role ? 'border-red-500' : ''
-            }`}
-          >
-            <option value="">Select role</option>
-            <option value="senior">Senior</option>
-            <option value="moderator">Moderator</option>
-            <option value="familymember">Family Member</option>
-          </select>
-          {signupState.fieldErrors?.role && (
-            <p className="text-red-500 text-sm">
-              {signupState.fieldErrors.role}
-            </p>
-          )}
+              <div>
+                <label className="block text-lg font-semibold text-gray-700 mb-2">
+                  <LockIcon className="inline w-5 h-5 mr-2" />
+                  Password
+                </label>
+                <input
+                  name="password"
+                  type="password"
+                  value={userPassword}
+                  onChange={(e) => setUserPassword(e.target.value)}
+                  className={`w-full p-4 text-lg border-2 rounded-xl focus:ring-2 focus:ring-blue-200 ${
+                    signupState.fieldErrors?.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="Create a password"
+                />
+                {signupState.fieldErrors?.password && (
+                  <p className="text-red-600 text-base mt-1 font-medium">
+                    {signupState.fieldErrors.password}
+                  </p>
+                )}
+              </div>
 
-          {signupState.error && !signupState.fieldErrors && (
-            <p className="text-red-500 text-sm">{signupState.error}</p>
-          )}
+              <div>
+                <label className="block text-lg font-semibold text-gray-700 mb-2">
+                  <UsersIcon className="inline w-5 h-5 mr-2" />
+                  I am a...
+                </label>
+                <select
+                  name="role"
+                  value={userRole}
+                  onChange={(e) => setUserRole(e.target.value)}
+                  className={`w-full p-4 text-lg border-2 rounded-xl focus:ring-2 focus:ring-blue-200 ${
+                    signupState.fieldErrors?.role ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
+                >
+                  <option value="">Please select your role</option>
+                  <option value="senior">Senior</option>
+                  <option value="moderator">Moderator</option>
+                  <option value="familymember">Family Member</option>
+                </select>
+                {signupState.fieldErrors?.role && (
+                  <p className="text-red-600 text-base mt-1 font-medium">
+                    {signupState.fieldErrors.role}
+                  </p>
+                )}
+              </div>
 
-          <Button
-            type="submit"
-            className="bg-green-500 text-white py-2 rounded mt-2 flex items-center justify-center gap-2"
-            disabled={signupPending}
-          >
-            {signupPending && (
-              <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-            )}
-            Sign Up
-          </Button>
-        </form>
+              {signupState.error && !signupState.fieldErrors && (
+                <div className="bg-red-50 border-2 border-red-300 text-red-700 px-4 py-3 rounded-xl text-lg">
+                  {signupState.error}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full bg-green-600 hover:bg-green-700 text-white text-xl py-4 rounded-xl mt-2 flex items-center justify-center gap-3 min-h-[60px]"
+                disabled={signupPending}
+              >
+                {signupPending && (
+                  <span className="animate-spin h-6 w-6 border-3 border-white border-t-transparent rounded-full"></span>
+                )}
+                Create Account
+              </Button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
