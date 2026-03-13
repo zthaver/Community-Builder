@@ -6,7 +6,7 @@ import { getblogData } from '../../blog/actions';
 import { BookOpenIcon, Loader2Icon } from 'lucide-react';
 
 const Blog = () => {
-  const [postData, setPostData] = useState<any[]>([]);
+  const [postData, setPostData] = useState<ArticleData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const Blog = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {postData.map((post: any) => (
+            {postData.map((post: ArticleData) => (
               <ArticleCard key={post.id} articleData={post} />
             ))}
           </div>

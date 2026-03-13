@@ -36,19 +36,19 @@ export default async function Home() {
 
         {!isLoggedIn ? (
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6">
+            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-6">
               <Link href="/login">Join Our Community</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6">
+            <Button asChild variant="outline" size="lg" className="bg-gray-700 hover:bg-gray-800 text-white border-gray-700 text-lg px-8 py-6">
               <Link href="/login">Sign In</Link>
             </Button>
           </div>
         ) : (
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6">
+            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-6">
               <Link href="/blog">Read Articles</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6">
+            <Button asChild variant="outline" size="lg" className="bg-gray-700 hover:bg-gray-800 text-white border-gray-700 text-lg px-8 py-6">
               <Link href="/calendar">View Events</Link>
             </Button>
           </div>
@@ -239,7 +239,7 @@ export default async function Home() {
             </div>
 
             <div className="mt-12">
-              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6">
+              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-6">
                 <Link href="/login">Join Our Community Today</Link>
               </Button>
             </div>

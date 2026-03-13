@@ -13,7 +13,20 @@ import {
 } from '../components/ui/card';
 import { ArrowRightIcon } from 'lucide-react';
 
-const ArticleCard = (articleData: any) => {
+type ArticleData = {
+  documentId: string;
+  articleTitle: string;
+  articleText: string;
+  blogImage: {
+    formats: {
+      small: {
+        url: string;
+      };
+    };
+  };
+};
+
+const ArticleCard = (articleData: ArticleData) => {
   let imageUrl: string = '/image.png';
   if (articleData.articleData.blogImage?.formats?.small) {
     imageUrl = articleData.articleData.blogImage.formats.small.url;
