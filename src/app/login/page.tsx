@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { signup } from './actions';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '../../../utils/supabase/client';
 import posthog from 'posthog-js';
 import { Button } from '../../app/components/ui/button';
-import { MailIcon, LockIcon, UserIcon, UsersIcon, PlayCircleIcon, AlertCircleIcon } from 'lucide-react';
+import { MailIcon, LockIcon, UserIcon, UsersIcon, PlayCircleIcon, AlertCircleIcon, Loader2Icon } from 'lucide-react';
 
 const DEMO_EMAIL = 'demo@communitybuilder.com';
 const DEMO_PASSWORD = 'demo123456';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -382,5 +382,24 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoginPageFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white">
+      <div className="text-center">
+        <Loader2Icon className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+        <p className="text-xl text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginPageFallback />}>
+      <LoginPageContent />
+    </Suspense>
   );
 }
