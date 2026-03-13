@@ -1,6 +1,6 @@
 import { UserCircleIcon } from 'lucide-react';
 
-type Comment = {
+export type Comment = {
   comment_id: string;
   user_id: string;
   article_id: string;

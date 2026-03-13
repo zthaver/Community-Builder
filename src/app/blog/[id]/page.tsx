@@ -6,8 +6,8 @@ import {
   getBlogComments,
   getSlugifiedblogData,
   handleSubmitComment,
-} from '../actions';
-import Comments from '../../components/Comments';
+} from '../../../utils/blog/actions';
+import Comments, { type Comment } from '../../components/Comments';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Textarea } from '../../../../@/components/ui/textarea';

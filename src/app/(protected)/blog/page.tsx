@@ -2,18 +2,43 @@
 
 import React, { useEffect, useState } from 'react';
 import ArticleCard from '../../components/ArticleCard';
-import { getblogData } from '../../blog/actions';
-import { BookOpenIcon, Loader2Icon } from 'lucide-react';
+import { getblogData } from '../../../utils/blog/actions';
+import { BookOpenIcon, Loader2Icon, AlertCircleIcon } from 'lucide-react';
+type ArticleData = {
+  id: string;
+  documentId: string;
+  articleTitle: string;
+  articleText: string;
+  blogImage: {
+    formats: {
+      small: {
+        url: string;
+      };
+    };
+  };
+};
 
 const Blog = () => {
   const [postData, setPostData] = useState<ArticleData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchblogData = async () => {
-      const blogData = await getblogData();
-      setPostData(blogData.data || []);
-      setLoading(false);
+      try {
+        const blogData = await getblogData();
+        if (blogData.error) {
+          setError(blogData.error);
+          setPostData([]);
+        } else {
+          setPostData(blogData.data || []);
+        }
+      } catch (err) {
+        console.error('Error loading blog data:', err);
+        setError('Unable to load articles. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchblogData();
@@ -47,12 +72,24 @@ const Blog = () => {
           </p>
         </div>
 
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-16">
+            <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 max-w-lg mx-auto">
+              <AlertCircleIcon className="w-12 h-12 text-red-500 mx-auto mb-4" aria-hidden="true" />
+              <h2 className="text-2xl font-bold text-red-700 mb-2">Unable to Load Articles</h2>
+              <p className="text-lg text-red-600 mb-4">{error}</p>
+              <p className="text-gray-600">Please check back later or contact support if this problem persists.</p>
+            </div>
+          </div>
+        )}
+
         {/* Articles Grid */}
-        {postData.length === 0 ? (
+        {!error && postData.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-xl text-gray-500">No articles available yet. Check back soon!</p>
           </div>
-        ) : (
+        ) : !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {postData.map((post: ArticleData) => (
               <ArticleCard key={post.id} articleData={post} />

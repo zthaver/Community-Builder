@@ -3,8 +3,9 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import { getCalendarData } from '../../calendar/actions';
-import { CalendarIcon, ClockIcon, MapPinIcon, LinkIcon, XIcon, Loader2Icon, ListIcon, CalendarDaysIcon } from 'lucide-react';
+import { getCalendarData } from '../../../utils/calendar/actions';
+import { CalendarIcon, ClockIcon, MapPinIcon, LinkIcon, XIcon, Loader2Icon, ListIcon, CalendarDaysIcon, AlertCircleIcon } from 'lucide-react';
+import { EventClickArg } from '@fullcalendar/core/index.js';
 
 type ExtendedProps = {
   link: string;
@@ -63,6 +64,7 @@ const CalendarPage = () => {
   const [calendarData, setCalendarData] = useState<CalendarEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<SelectedEvent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const calendarRef = useRef<FullCalendar>(null);
 
   const getAbsoluteLink = (link?: string) => {
@@ -73,11 +75,12 @@ const CalendarPage = () => {
   };
 
   const handleEventClick = (clickInfo: EventClickArg) => {
+    if (!clickInfo.event.start || !clickInfo.event.end) return;
     setSelectedEvent({
       title: clickInfo.event.title,
-      start: formatDateTime(clickInfo.event.start),
-      end: formatDateTime(clickInfo.event.end),
-      extendedProps: clickInfo.event.extendedProps,
+      start: formatDateTime(clickInfo.event.start.toISOString()),
+      end: formatDateTime(clickInfo.event.end.toISOString()),
+      extendedProps: clickInfo.event.extendedProps as ExtendedProps,
     });
   };
 
@@ -98,9 +101,20 @@ const CalendarPage = () => {
 
   useEffect(() => {
     const fetchCalendarData = async () => {
-      const data = await getCalendarData();
-      setCalendarData(data.data || []);
-      setLoading(false);
+      try {
+        const data = await getCalendarData();
+        if (data.error) {
+          setError(data.error);
+          setCalendarData([]);
+        } else {
+          setCalendarData(data.data || []);
+        }
+      } catch (err) {
+        console.error('Error loading calendar data:', err);
+        setError('Unable to load events. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchCalendarData();
@@ -128,6 +142,21 @@ const CalendarPage = () => {
         <div className="text-center">
           <Loader2Icon className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
           <p className="text-xl text-gray-600">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="text-center">
+          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 max-w-lg mx-auto">
+            <AlertCircleIcon className="w-12 h-12 text-red-500 mx-auto mb-4" aria-hidden="true" />
+            <h2 className="text-2xl font-bold text-red-700 mb-2">Unable to Load Events</h2>
+            <p className="text-lg text-red-600 mb-4">{error}</p>
+            <p className="text-gray-600">Please check back later or contact support if this problem persists.</p>
+          </div>
         </div>
       </div>
     );

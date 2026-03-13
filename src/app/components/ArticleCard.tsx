@@ -26,13 +26,13 @@ type ArticleData = {
   };
 };
 
-const ArticleCard = (articleData: ArticleData) => {
+const ArticleCard = ({ articleData }: { articleData: ArticleData }) => {
   let imageUrl: string = '/image.png';
-  if (articleData.articleData.blogImage?.formats?.small) {
-    imageUrl = articleData.articleData.blogImage.formats.small.url;
+  if (articleData.blogImage?.formats?.small) {
+    imageUrl = articleData.blogImage.formats.small.url;
   }
 
-  const articleUrl = `/blog/${articleData.articleData.documentId}`;
+  const articleUrl = `/blog/${articleData.documentId}`;
 
   return (
     <Card className="w-full max-w-md flex flex-col bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow overflow-hidden">
@@ -40,7 +40,7 @@ const ArticleCard = (articleData: ArticleData) => {
       <div className="relative w-full h-56">
         <Image 
           src={imageUrl} 
-          alt={articleData.articleData.articleTitle || 'Article image'} 
+          alt={articleData.articleTitle || 'Article image'} 
           fill
           className="object-cover"
         />
@@ -48,10 +48,10 @@ const ArticleCard = (articleData: ArticleData) => {
       
       <CardHeader className="p-6">
         <CardTitle className="text-2xl font-bold text-gray-900 leading-tight mb-3">
-          {articleData.articleData.articleTitle}
+          {articleData.articleTitle}
         </CardTitle>
         <CardDescription className="text-lg text-gray-600 line-clamp-3 leading-relaxed">
-          {articleData.articleData.articleText}
+          {articleData.articleText}
         </CardDescription>
       </CardHeader>
       
