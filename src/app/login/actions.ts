@@ -13,7 +13,10 @@ export type FormState = {
    LOGIN
 ========================= */
 // actions.ts
-export async function login(prevState: FormState, formData: FormData): Promise<FormState> {
+export async function login(
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
   const supabase = await createClient();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -28,21 +31,23 @@ export async function login(prevState: FormState, formData: FormData): Promise<F
     return { error: 'Please fix the errors', fieldErrors };
   }
 
-  const { data: userData, error: signInError } = await supabase.auth.signInWithPassword({ email, password }).then(res => res);
+  const { data: userData, error: signInError } = await supabase.auth
+    .signInWithPassword({ email, password })
+    .then((res) => res);
 
   if (signInError || !userData.user) {
     // ❌ Outline both email and password as invalid
-    return { 
-      error: 'Invalid login', 
+    return {
+      error: 'Invalid login',
       fieldErrors: {
         email: 'Invalid email or password',
-        password: 'Invalid email or password'
-      }
+        password: 'Invalid email or password',
+      },
     };
   }
 
   // ✅ Redirect after successful login
-  redirect('/home'); 
+  redirect('/home');
 }
 
 /* =========================
@@ -50,7 +55,7 @@ export async function login(prevState: FormState, formData: FormData): Promise<F
 ========================= */
 export async function signup(
   prevState: FormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<FormState> {
   const supabase = await createClient();
   const email = formData.get('email') as string;
@@ -68,20 +73,31 @@ export async function signup(
     return { error: 'Please fix the errors', fieldErrors };
   }
 
-  const { data: userData, error: signupError } = await supabase.auth.signUp({ email, password });
+  const { data: userData, error: signupError } = await supabase.auth.signUp({
+    email,
+    password,
+  });
 
   if (signupError) {
-    return { error: 'Signup failed', fieldErrors: { email: signupError.message } };
+    return {
+      error: 'Signup failed',
+      fieldErrors: { email: signupError.message },
+    };
   }
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { error: errorInsert } = await supabase
     .from('users')
     .insert({ id: user?.id, name, email, role });
 
   if (errorInsert) {
-    return { error: 'Failed to save user', fieldErrors: { email: 'Email may already be registered' } };
+    return {
+      error: 'Failed to save user',
+      fieldErrors: { email: 'Email may already be registered' },
+    };
   }
 
   redirect('/');

@@ -1,11 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { createClient } from "../../../../utils/supabase/client";
-import { useAppDispatch } from "../../../store/hooks";
-import { setUser, clearUser } from "../../../store/slices/authSlice";
+import { useEffect } from 'react';
+import { createClient } from '../../../../utils/supabase/client';
+import { useAppDispatch } from '../../../store/hooks';
+import { setUser, clearUser } from '../../../store/slices/authSlice';
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
+export default function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {

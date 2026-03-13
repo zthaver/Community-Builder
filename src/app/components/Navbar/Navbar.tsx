@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Button } from "../ui/button";
-import React, { useEffect } from "react";
-import { BookIcon, ContactIcon, HouseIcon } from "lucide-react";
-import Link from "next/link";
-import { createClient } from "../../../../utils/supabase/client";
-import { logout } from "./actions";
+import { Button } from '../ui/button';
+import React, { useEffect } from 'react';
+import { BookIcon, CalendarIcon, HouseIcon, LogOutIcon, LogInIcon } from 'lucide-react';
+import Link from 'next/link';
+import { createClient } from '../../../../utils/supabase/client';
+import { logout } from './actions';
 
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setUser, clearUser } from "../../../store/slices/authSlice";
-import { useRouter, usePathname } from 'next/navigation'
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { setUser, clearUser } from '../../../store/slices/authSlice';
+import { useRouter, usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const supabase = createClient();
@@ -20,50 +20,102 @@ const Navbar = () => {
   const user = useAppSelector((state) => state.auth?.user);
 
   async function handleLogout() {
-await supabase.auth.signOut();
+    await supabase.auth.signOut();
   }
 
+  const isActive = (path: string) => pathname === path || pathname?.startsWith(path + '/');
 
   return (
-    <nav className="w-full h-full px-4 py-2 shadow-xl bg-white">
-      <div className="flex justify-between md:justify-start items-center space-x-90">
-        <img className="w-16" src="/images.png" />
+    <nav 
+      className="w-full px-6 py-4 shadow-lg bg-white border-b-2 border-gray-200"
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      <div className="flex justify-between items-center max-w-7xl mx-auto">
+        {/* Logo */}
+        <Link 
+          href="/" 
+          className="flex items-center gap-3"
+          aria-label="Community Builder - Go to homepage"
+        >
+          <img className="w-14 h-14" src="/images.png" alt="" aria-hidden="true" />
+          <span className="text-xl font-bold text-gray-800 hidden md:block">Community Builder</span>
+        </Link>
 
-        <div className="flex-1 flex auto space-x-2 justify-center">
-          <div className="flex items-center space-x-1">
-            <HouseIcon color="grey" size={36} />
-            <Button variant={pathname === "/" ? "ghost" : "default"} className={pathname === "/" ? "bg-blue-500 text-white" : ""}>
-              <Link href="/">Home</Link>
-            </Button>
-          </div>
+        {/* Navigation Links - Large touch targets */}
+        <div className="flex items-center gap-2 md:gap-4" role="menubar" aria-label="Main menu">
+          <Link 
+            href="/" 
+            role="menuitem"
+            aria-current={isActive('/') && !isActive('/blog') && !isActive('/calendar') ? 'page' : undefined}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl text-lg font-medium transition-colors min-h-[52px] ${
+              isActive('/') && !isActive('/blog') && !isActive('/calendar')
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <HouseIcon size={28} aria-hidden="true" />
+            <span className="hidden sm:inline">Home</span>
+            <span className="sr-only sm:hidden">Home</span>
+          </Link>
 
-          <div className="flex items-center space-x-1">
-            <BookIcon color="grey" size={36} />
-            <Button variant={pathname === "/blog" ? "ghost" : "default"} className={pathname === "/blog" ? "bg-blue-500 text-white" : ""}>
-              <Link href="/blog">Articles</Link>
-            </Button>
-          </div>
+          <Link 
+            href="/blog" 
+            role="menuitem"
+            aria-current={isActive('/blog') ? 'page' : undefined}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl text-lg font-medium transition-colors min-h-[52px] ${
+              isActive('/blog') 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <BookIcon size={28} aria-hidden="true" />
+            <span className="hidden sm:inline">Articles</span>
+            <span className="sr-only sm:hidden">Articles</span>
+          </Link>
 
-          <div className="flex items-center space-x-1">
-            <ContactIcon color="grey" size={36} />
-            <Button variant={pathname === "/calendar" ? "ghost" : "default"} className={pathname === "/calendar" ? "bg-blue-500 text-white" : ""}>
-              <Link href="/calendar">Events</Link>
-            </Button>
-          </div>
+          <Link 
+            href="/calendar" 
+            role="menuitem"
+            aria-current={isActive('/calendar') ? 'page' : undefined}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl text-lg font-medium transition-colors min-h-[52px] ${
+              isActive('/calendar') 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <CalendarIcon size={28} aria-hidden="true" />
+            <span className="hidden sm:inline">Events</span>
+            <span className="sr-only sm:hidden">Events</span>
+          </Link>
         </div>
 
-        <div>
+        {/* User Section */}
+        <div className="flex items-center gap-3">
           {user ? (
-            <div className="flex items-center gap-4">
-              <span>Hello, {user.email}</span>
-                <Button variant="ghost" onClick={handleLogout}>
-                  Logout
-                </Button>
-            </div>
-          ):(
-            <Button variant="ghost">
-              <Link href="/login">LOGIN</Link>
-            </Button>
+            <>
+              <span className="text-lg text-gray-700 hidden md:block" aria-live="polite">
+                Hello, <strong>{user.email?.split('@')[0]}</strong>
+              </span>
+              <button 
+                onClick={handleLogout}
+                aria-label="Logout from your account"
+                className="flex items-center gap-2 px-4 py-3 rounded-xl text-lg font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors min-h-[52px]"
+              >
+                <LogOutIcon size={24} aria-hidden="true" />
+                <span className="hidden sm:inline">Logout</span>
+                <span className="sr-only sm:hidden">Logout</span>
+              </button>
+            </>
+          ) : (
+            <Link 
+              href="/login"
+              aria-label="Login to your account"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl text-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors min-h-[52px]"
+            >
+              <LogInIcon size={24} aria-hidden="true" />
+              <span>Login</span>
+            </Link>
           )}
         </div>
       </div>
