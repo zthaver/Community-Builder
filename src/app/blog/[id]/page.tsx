@@ -34,6 +34,7 @@ const Blog = () => {
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [commentText, setCommentText] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const params = useParams();
 
   const submitComment = async (e: FormEvent) => {
@@ -47,6 +48,7 @@ const Blog = () => {
       commentText.trim(),
     );
     if (res.error) {
+      setError(res.error);
       console.error('Error saving comment', res.error);
     }
 
@@ -161,6 +163,7 @@ const Blog = () => {
               {isSubmitting ? 'Posting...' : 'Post Comment'}
             </Button>
           </form>
+          {error && <p className="text-red-500">{error.message}</p>}
 
           {/* Comments List */}
           <div className="border-t-2 border-gray-200 pt-8">

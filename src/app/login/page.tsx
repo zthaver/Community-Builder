@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '../../../utils/supabase/client';
 import posthog from 'posthog-js';
 import { Button } from '../../app/components/ui/button';
-import { MailIcon, LockIcon, UserIcon, UsersIcon, PlayCircleIcon, AlertCircleIcon, Loader2Icon } from 'lucide-react';
+import { MailIcon, LockIcon, UserIcon, UsersIcon, PlayCircleIcon, AlertCircleIcon, Loader2Icon, CheckCircleIcon } from 'lucide-react';
 
 const DEMO_EMAIL = 'demo@communitybuilder.com';
 const DEMO_PASSWORD = 'demo123456';
@@ -24,23 +24,22 @@ function LoginPageContent() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [guestLoading, setGuestLoading] = useState(false);
-  const [authMessage, setAuthMessage] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const redirectPath = searchParams.get('redirect') || '/home';
-
-  useEffect(() => {
-    const message = searchParams.get('message');
-    if (message === 'login_required') {
-      const path = searchParams.get('redirect');
-      if (path?.includes('blog')) {
-        setAuthMessage('Please sign in to read articles.');
-      } else if (path?.includes('calendar')) {
-        setAuthMessage('Please sign in to view events.');
-      } else {
-        setAuthMessage('Please sign in to access this page.');
-      }
-    }
-  }, [searchParams]);
+  
+  // Read messages synchronously from search params to avoid flicker
+  const message = searchParams.get('message');
+  const authMessage = message === 'login_required' 
+    ? (searchParams.get('redirect')?.includes('blog') 
+        ? 'Please sign in to read articles.'
+        : searchParams.get('redirect')?.includes('calendar')
+          ? 'Please sign in to view events.'
+          : 'Please sign in to access this page.')
+    : null;
+  const loggedOutMessage = message === 'logged_out' 
+    ? 'You have been successfully logged out.' 
+    : null;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +66,7 @@ function LoginPageContent() {
         setLoginLoading(false);
         return;
       }
+      setIsRedirecting(true);
       await new Promise((r) => setTimeout(r, 100));
       window.location.href = redirectPath;
     }
@@ -99,6 +99,7 @@ function LoginPageContent() {
         posthog.capture('purchase_completed', { amount: 99 })
         return;
       }
+      setIsRedirecting(true);
       await new Promise((r) => setTimeout(r, 100));
       window.location.href = redirectPath;
     }
@@ -117,6 +118,21 @@ function LoginPageContent() {
   const [userPassword, setUserPassword] = useState('');
   const [userRole, setUserRole] = useState('');
 
+  // Track if any auth action is in progress
+  const isAnyLoading = loginLoading || guestLoading || signupPending || isRedirecting;
+
+  // Show redirecting screen to prevent flicker
+  if (isRedirecting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white">
+        <div className="text-center">
+          <Loader2Icon className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-xl text-gray-600">Signing you in...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8 px-4">
       <div className="max-w-5xl mx-auto">
@@ -128,6 +144,19 @@ function LoginPageContent() {
               <div>
                 <h3 className="text-xl font-bold text-red-700">Sign In Required</h3>
                 <p className="text-lg text-red-600">{authMessage}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Logged Out Message */}
+        {loggedOutMessage && (
+          <div className="max-w-2xl mx-auto mb-6" role="alert" aria-live="polite">
+            <div className="bg-red-50 border-2 border-red-400 rounded-2xl p-5 flex items-center gap-4">
+              <CheckCircleIcon className="w-8 h-8 text-red-500 shrink-0" aria-hidden="true" />
+              <div>
+                <h3 className="text-xl font-bold text-red-700">Logged Out</h3>
+                <p className="text-lg text-red-600">{loggedOutMessage}</p>
               </div>
             </div>
           </div>
@@ -149,7 +178,7 @@ function LoginPageContent() {
               </p>
               <button
                 onClick={handleGuestLogin}
-                disabled={guestLoading || loginLoading}
+                disabled={isAnyLoading}
                 aria-busy={guestLoading}
                 aria-label="Try demo account - no account needed"
                 className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white text-xl font-semibold py-4 px-10 rounded-xl flex items-center justify-center gap-3 min-h-[60px] mx-auto disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -194,7 +223,7 @@ function LoginPageContent() {
                   onChange={(e) => setLoginEmail(e.target.value)}
                   className="w-full p-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   placeholder="your.email@example.com"
-                  disabled={loginLoading}
+                  disabled={isAnyLoading}
                   autoComplete="email"
                   aria-required="true"
                   aria-describedby={loginError ? "login-error" : undefined}
@@ -213,7 +242,7 @@ function LoginPageContent() {
                   onChange={(e) => setLoginPassword(e.target.value)}
                   className="w-full p-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   placeholder="Enter your password"
-                  disabled={loginLoading}
+                  disabled={isAnyLoading}
                   autoComplete="current-password"
                   aria-required="true"
                   aria-describedby={loginError ? "login-error" : undefined}
@@ -234,7 +263,7 @@ function LoginPageContent() {
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xl py-4 rounded-xl mt-2 flex items-center justify-center gap-3 min-h-[60px]"
-                disabled={loginLoading}
+                disabled={isAnyLoading}
                 aria-busy={loginLoading}
               >
                 {loginLoading && (
@@ -369,7 +398,7 @@ function LoginPageContent() {
               <Button
                 type="submit"
                 className="w-full bg-green-600 hover:bg-green-700 text-white text-xl py-4 rounded-xl mt-2 flex items-center justify-center gap-3 min-h-[60px]"
-                disabled={signupPending}
+                disabled={isAnyLoading}
                 aria-busy={signupPending}
               >
                 {signupPending && (

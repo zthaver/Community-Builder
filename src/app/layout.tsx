@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Josefin_Sans, Nunito_Sans } from 'next/font/google';
 import './globals.css';
 import Navbar from './components/Navbar/Navbar';
 import ScreenMagnifier from './components/ScreenMagnifier';
+import OfflineDetector from './components/OfflineDetector';
 import { PostHogProvider } from './providers'
 import AuthProvider from './auth/confirm/AuthProvider';
 
@@ -39,6 +40,8 @@ export default function RootLayout({
             >
               Skip to main content
             </a>
+            {/* Offline detection banner */}
+            <OfflineDetector />
             <Navbar />
             <main id="main-content" role="main" tabIndex={-1}>
               {children}

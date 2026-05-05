@@ -25,20 +25,13 @@ const Blog = () => {
 
   useEffect(() => {
     const fetchblogData = async () => {
-      try {
-        const blogData = await getblogData();
-        if (blogData.error) {
-          setError(blogData.error);
-          setPostData([]);
-        } else {
-          setPostData(blogData.data || []);
-        }
-      } catch (err) {
-        console.error('Error loading blog data:', err);
-        setError('Unable to load articles. Please try again later.');
-      } finally {
-        setLoading(false);
+      const blogData = await getblogData();
+      if (blogData.error) {
+        setError(blogData.error);
+      } else {
+        setPostData(blogData.data || []);
       }
+      setLoading(false);
     };
 
     fetchblogData();
@@ -50,6 +43,26 @@ const Blog = () => {
         <div className="text-center">
           <Loader2Icon className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
           <p className="text-xl text-gray-600">Loading articles...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="text-center">
+          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 max-w-lg mx-auto">
+            <AlertCircleIcon className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-red-700 mb-2">Unable to Load Articles</h2>
+            <p className="text-lg text-red-600 mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -72,24 +85,12 @@ const Blog = () => {
           </p>
         </div>
 
-        {/* Error State */}
-        {error && (
-          <div className="text-center py-16">
-            <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 max-w-lg mx-auto">
-              <AlertCircleIcon className="w-12 h-12 text-red-500 mx-auto mb-4" aria-hidden="true" />
-              <h2 className="text-2xl font-bold text-red-700 mb-2">Unable to Load Articles</h2>
-              <p className="text-lg text-red-600 mb-4">{error}</p>
-              <p className="text-gray-600">Please check back later or contact support if this problem persists.</p>
-            </div>
-          </div>
-        )}
-
         {/* Articles Grid */}
-        {!error && postData.length === 0 ? (
+        {postData.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-xl text-gray-500">No articles available yet. Check back soon!</p>
           </div>
-        ) : !error && (
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {postData.map((post: ArticleData) => (
               <ArticleCard key={post.id} articleData={post} />
