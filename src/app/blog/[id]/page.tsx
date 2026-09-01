@@ -48,7 +48,7 @@ const Blog = () => {
       commentText.trim(),
     );
     if (res.error) {
-      setError(res.error);
+      setError(res.error.message);
       console.error('Error saving comment', res.error);
     }
 
@@ -163,7 +163,7 @@ const Blog = () => {
               {isSubmitting ? 'Posting...' : 'Post Comment'}
             </Button>
           </form>
-          {error && <p className="text-red-500">{error.message}</p>}
+          {error && <p className="text-red-500">{error}</p>}
 
           {/* Comments List */}
           <div className="border-t-2 border-gray-200 pt-8">
