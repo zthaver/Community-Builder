@@ -69,7 +69,6 @@ const Navbar = () => {
           className="flex items-center gap-3"
           aria-label="Community Builder - Go to homepage"
         >
-          <img className="w-14 h-14" src="/images.png" alt="" aria-hidden="true" />
           <span className="text-xl font-bold text-gray-800 hidden md:block">Community Builder</span>
         </Link>
 
